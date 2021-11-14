@@ -1,4 +1,4 @@
-package parts.login.builder;
+package parts.login.component.builder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

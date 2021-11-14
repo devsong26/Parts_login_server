@@ -1,4 +1,4 @@
-package parts.login.config;
+package parts.login.handler;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;

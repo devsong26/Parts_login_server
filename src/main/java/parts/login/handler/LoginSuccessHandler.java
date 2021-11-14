@@ -1,9 +1,9 @@
-package parts.login.config;
+package parts.login.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import parts.login.builder.MessageBuilder;
+import parts.login.component.builder.MessageBuilder;
 import parts.login.domain.Message;
 import parts.login.util.ResponseUtil;
 
