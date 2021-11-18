@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import parts.login.handler.LoginFailureHandler;
 import parts.login.handler.LoginSuccessHandler;
+import parts.login.service.CustomUserDetailService;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailService customUserDetailService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
+        auth.userDetailsService(customUserDetailService)
                 .passwordEncoder(passwordEncoder);
 
     }
