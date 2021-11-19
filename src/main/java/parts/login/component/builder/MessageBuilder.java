@@ -16,15 +16,16 @@ public class MessageBuilder {
 
     private final String msgKeyPrefix = "msg";
 
-    public Message getLoginSuccessMsg(Locale locale) {
-        HttpStatus statusOK = HttpStatus.OK;
-        String msgKey = getMsgKey(statusOK);
-        return build(statusOK, msgKey, locale);
+    public Message getMessage(Locale locale, HttpStatus status) {
+        String msgKey = getMsgKey(status);
+        return build(status, msgKey, locale);
     }
 
     private String getMsgKey(HttpStatus status){
-        StringBuilder sb = new StringBuilder(msgKeyPrefix).append(status.name());
-        return sb.toString();
+        return new StringBuilder(msgKeyPrefix)
+                .append(".")
+                .append(status.value())
+                .toString();
     }
 
     private Message build(HttpStatus status, String msgKey, Locale locale){

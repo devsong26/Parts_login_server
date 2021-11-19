@@ -1,6 +1,7 @@
 package parts.login.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,21 +18,32 @@ import parts.login.service.CustomUserDetailService;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler();
-    private final LoginFailureHandler loginFailureHandler = new LoginFailureHandler();
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     private CustomUserDetailService customUserDetailService;
 
+    @Bean
+    LoginSuccessHandler loginSuccessHandler(){
+        return new LoginSuccessHandler();
+    }
+
+    @Bean
+    LoginFailureHandler loginFailureHandler(){
+        return new LoginFailureHandler();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/login/*").permitAll()
-                .and().formLogin()
-                        .loginProcessingUrl("/login")
-                        .successHandler(loginSuccessHandler)
-                        .failureHandler(loginFailureHandler);
+        http.csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/login/*").permitAll()
+            .and().formLogin()
+                .loginProcessingUrl("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(loginSuccessHandler())
+                .failureHandler(loginFailureHandler());
     }
 
     @Override

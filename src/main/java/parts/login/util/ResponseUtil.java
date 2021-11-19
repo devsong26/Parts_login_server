@@ -1,5 +1,6 @@
 package parts.login.util;
 
+import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.MediaType;
 import parts.login.domain.Message;
@@ -12,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 @UtilityClass
 public class ResponseUtil {
 
+    private Gson gson = new Gson();
+
     public void setResponseOption(HttpServletResponse response){
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -22,7 +25,8 @@ public class ResponseUtil {
     }
 
     public void response(PrintWriter writer, Message message){
-        writer.print(message);
+        String res = gson.toJson(message);
+        writer.print(res);
     }
 
 }
