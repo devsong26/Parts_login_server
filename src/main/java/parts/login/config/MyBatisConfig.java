@@ -3,7 +3,6 @@ package parts.login.config;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -14,8 +13,6 @@ import javax.sql.DataSource;
 @Configuration
 @RequiredArgsConstructor
 public class MyBatisConfig {
-
-    private final ApplicationContext appCtx;
 
     @Bean
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {

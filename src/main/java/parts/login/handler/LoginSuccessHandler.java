@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import parts.login.component.builder.MessageBuilder;
 import parts.login.domain.Message;
+import parts.login.service.RedisService;
 import parts.login.util.ResponseUtil;
 
 import javax.servlet.ServletException;
@@ -19,16 +20,30 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private MessageBuilder messageBuilder;
 
+    @Autowired
+    private RedisService redisService;
+
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication) throws IOException, ServletException {
         try{
-            ResponseUtil.setResponseOption(response);
-            PrintWriter writer = ResponseUtil.getPrintWriter(response);
-            Message successMsg = messageBuilder.getMessage(request.getLocale(), HttpStatus.OK);
-            ResponseUtil.response(writer, successMsg);
-        }catch(IOException e){
+            saveSession(req);
+            response(req, res);
+        }catch (IOException e){
             e.getStackTrace();
         }
+    }
+
+    private void saveSession(HttpServletRequest req) throws ClassCastException{
+        String username = req.getParameter("username");
+        String sessionId = req.getRequestedSessionId();
+        redisService.setValue(username, sessionId);
+    }
+
+    private void response(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        ResponseUtil.setResponseOption(res);
+        PrintWriter writer = ResponseUtil.getPrintWriter(res);
+        Message successMsg = messageBuilder.getMessage(req.getLocale(), HttpStatus.OK);
+        ResponseUtil.response(writer, successMsg);
     }
 
 }
