@@ -19,4 +19,6 @@ public class CustomUserDetails implements UserDetails {
     private boolean isCredentialsNonExpired;
     private Collection<? extends GrantedAuthority> authorities;
 
+    private String token;
+
 }

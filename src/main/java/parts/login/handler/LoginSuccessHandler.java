@@ -1,19 +1,26 @@
 package parts.login.handler;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import parts.login.component.builder.MessageBuilder;
+import parts.login.domain.CustomUserDetails;
 import parts.login.domain.Message;
 import parts.login.service.RedisService;
 import parts.login.util.ResponseUtil;
+import parts.login.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -26,23 +33,31 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication) throws IOException, ServletException {
         try{
-            saveSession(req);
-            response(req, res);
+            CustomUserDetails details = (CustomUserDetails) authentication.getPrincipal();
+            buildToken(details);
+            saveSession(details);
+            response(res, details);
         }catch (IOException e){
             e.getStackTrace();
         }
     }
 
-    private void saveSession(HttpServletRequest req) throws ClassCastException{
-        String username = req.getParameter("username");
-        String sessionId = req.getRequestedSessionId();
-        redisService.setValue(username, sessionId);
+    private void buildToken(CustomUserDetails details) {
+        UUID uuid = UUID.nameUUIDFromBytes(details.getUsername().getBytes(StandardCharsets.UTF_8));
+        details.setToken(uuid.toString());
     }
 
-    private void response(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    private void saveSession(CustomUserDetails details) throws ClassCastException{
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", details.getUsername());
+
+        redisService.setValue(details.getToken(), StringUtil.objToJson(map));
+    }
+
+    private void response(HttpServletResponse res, CustomUserDetails details) throws IOException {
         ResponseUtil.setResponseOption(res);
         PrintWriter writer = ResponseUtil.getPrintWriter(res);
-        Message successMsg = messageBuilder.getMessage(req.getLocale(), HttpStatus.OK);
+        Message successMsg = messageBuilder.getMsgLoginOK(res.getLocale(), HttpStatus.OK, details.getToken());
         ResponseUtil.response(writer, successMsg);
     }
 

@@ -36,4 +36,11 @@ public class MessageBuilder {
         return msg;
     }
 
+    public Message getMsgLoginOK(Locale locale, HttpStatus status, String extra){
+        String msgKey = getMsgKey(status);
+        Message msg = build(status, msgKey, locale);
+        msg.setExtra(extra);
+        return msg;
+    }
+
 }
