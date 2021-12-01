@@ -1,6 +1,5 @@
 package parts.login.handler;
 
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -34,17 +33,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication) throws IOException, ServletException {
         try{
             CustomUserDetails details = (CustomUserDetails) authentication.getPrincipal();
-            buildToken(details);
+            CustomUserDetails.builder.fromToken(details);
             saveSession(details);
             response(res, details);
         }catch (IOException e){
             e.getStackTrace();
         }
-    }
-
-    private void buildToken(CustomUserDetails details) {
-        UUID uuid = UUID.nameUUIDFromBytes(details.getUsername().getBytes(StandardCharsets.UTF_8));
-        details.setToken(uuid.toString());
     }
 
     private void saveSession(CustomUserDetails details) throws ClassCastException{
