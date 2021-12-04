@@ -16,10 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -33,7 +29,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication) throws IOException, ServletException {
         try{
             CustomUserDetails details = (CustomUserDetails) authentication.getPrincipal();
-            CustomUserDetails.builder.fromToken(details);
             saveSession(details);
             response(res, details);
         }catch (IOException e){
@@ -42,10 +37,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private void saveSession(CustomUserDetails details) throws ClassCastException{
-        Map<String, Object> map = new HashMap<>();
-        map.put("username", details.getUsername());
-
-        redisService.setValue(details.getToken(), StringUtil.objToJson(map));
+        redisService.setValue(details.getToken(), StringUtil.objToJson(details));
     }
 
     private void response(HttpServletResponse res, CustomUserDetails details) throws IOException {
