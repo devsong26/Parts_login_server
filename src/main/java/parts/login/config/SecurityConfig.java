@@ -23,12 +23,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomUserDetailService customUserDetailService;
 
     @Bean
-    LoginSuccessHandler loginSuccessHandler(){
+    public LoginSuccessHandler loginSuccessHandler(){
         return new LoginSuccessHandler();
     }
 
     @Bean
-    LoginFailureHandler loginFailureHandler(){
+    public LoginFailureHandler loginFailureHandler(){
         return new LoginFailureHandler();
     }
 

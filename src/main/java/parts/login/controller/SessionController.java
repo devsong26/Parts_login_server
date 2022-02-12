@@ -1,4 +1,4 @@
-package parts.login;
+package parts.login.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +15,7 @@ public class SessionController {
 
     @GetMapping("/session/info")
     public String getSessionInfo(String key){
-        String value = Optional.of(redisService.getValue(key)).orElse("None");
-        return value;
+        return Optional.of(redisService.getValue(key)).orElse("None");
     }
 
 }
