@@ -9,4 +9,18 @@
         FROM user u
         WHERE u.username = #{username}
     </select>
+
+    <insert id="save" parameterType="parts.login.domain.User">
+        insert into user(
+            username
+            , password
+            , enabled
+            , country
+        ) values (
+            #{username}
+            , #{password}
+            , 1
+            , 'KR'
+        )
+    </insert>
 </mapper>

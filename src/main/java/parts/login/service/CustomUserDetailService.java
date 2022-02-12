@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import parts.login.domain.CustomUserDetails;
 import parts.login.domain.User;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,20 +33,21 @@ public class CustomUserDetailService implements UserDetailsService {
     }
 
     public UserDetails buildCredentials(User user){
-        return CustomUserDetails.newBuilder()
-                .setUsername(user.getUsername())
-                .setPassword(user.getPassword())
-                .setAuthorities(
+        return CustomUserDetails.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities(
                         authorityService.findByUsername(user.getUsername())
                                 .stream()
                                 .map(auth -> new SimpleGrantedAuthority(auth.getAuthority()))
                                 .collect(Collectors.toList())
                 )
-                .setEnabled(true)
-                .setAccountNonExpired(true)
-                .setAccountNonLocked(true)
-                .setCredentialsNonExpired(true)
-                .setToken(user.getUsername())
+                .isEnabled(true)
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .token(user.getUsername())
                 .build();
     }
 

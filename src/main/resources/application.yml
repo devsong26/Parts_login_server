@@ -11,3 +11,7 @@ spring:
     host: localhost
     password: 123123
     port: 6379
+  thread:
+    size:
+      core: 2
+      max: 3

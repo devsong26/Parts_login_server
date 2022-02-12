@@ -15,4 +15,7 @@ public class UserService {
         return userMapper.findByUsername(username);
     }
 
+    public void save(User user) {
+        userMapper.save(user);
+    }
 }

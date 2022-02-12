@@ -1,19 +1,20 @@
-package parts.login.service;
+package parts.login.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-@Service
-public class RedisService {
+@Component
+public class RedisClient {
 
     @Autowired
     private RedisTemplate redisTemplate;
 
     static final long TIME_OUT_MINUTES = 30;
 
+    @SuppressWarnings("unchecked")
     public void setValue(String key, String value){
         redisTemplate.opsForValue().set(key, value, TIME_OUT_MINUTES, TimeUnit.MINUTES);
     }

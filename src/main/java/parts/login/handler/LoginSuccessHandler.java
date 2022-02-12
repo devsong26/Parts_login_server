@@ -4,14 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import parts.login.client.RedisClient;
 import parts.login.component.builder.MessageBuilder;
 import parts.login.domain.CustomUserDetails;
+import parts.login.domain.LoginHistory;
 import parts.login.domain.Message;
-import parts.login.service.RedisService;
+import parts.login.service.LoginHistoryService;
+import parts.login.util.HeaderUtil;
 import parts.login.util.ResponseUtil;
 import parts.login.util.StringUtil;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,12 +25,19 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private MessageBuilder messageBuilder;
 
     @Autowired
-    private RedisService redisService;
+    private RedisClient redisClient;
+
+    @Autowired
+    private LoginHistoryService loginHistoryService;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication){
         try{
             CustomUserDetails details = (CustomUserDetails) authentication.getPrincipal();
+            details.setUserAgent(HeaderUtil.getUserAgent(req));
+
+            logingHistory(details);
+
             saveSession(details);
             response(res, details);
         }catch (IOException e){
@@ -36,8 +45,17 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
     }
 
+    private void logingHistory(CustomUserDetails details) {
+        loginHistoryService.save(
+                LoginHistory.builder()
+                        .userId(details.getId())
+                        .userAgent(details.getUserAgent())
+                        .build()
+        );
+    }
+
     private void saveSession(CustomUserDetails details) throws ClassCastException{
-        redisService.setValue(details.getToken(), StringUtil.objToJson(details));
+        redisClient.setValue(details.getToken(), StringUtil.objToJson(details));
     }
 
     private void response(HttpServletResponse res, CustomUserDetails details) throws IOException {
