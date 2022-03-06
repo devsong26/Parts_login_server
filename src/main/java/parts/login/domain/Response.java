@@ -1,9 +1,13 @@
 package parts.login.domain;
 
+import org.springframework.http.HttpStatus;
+
 public interface Response<T> {
 
-    Response<T> onSuccess(T data);
+    T getData();
 
-    Response<T> onError(T data);
+    String getMessage();
+
+    HttpStatus getStatus();
 
 }
